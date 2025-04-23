@@ -13,7 +13,17 @@ export default function SignupPage() {
         e.preventDefault()
         setError(null)
 
-        const res = await fetch('http://localhost:4567/users/signup', {
+        if (!email || !password) {
+            setError('Por favor, preencha todos os campos.');
+            return;
+        }
+
+        if (password.length < 6) {
+            setError('A senha deve ter no mínimo 6 caracteres.');
+            return;
+        }
+
+        const res = await fetch('/api/auth/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -22,9 +32,16 @@ export default function SignupPage() {
         })
 
         if (!res.ok) {
-            const { error } = await res.json()
-            setError(error || 'Erro ao criar conta')
-            return
+            const response = await res.json();
+
+            const error = response.errors?.[0];
+
+            if (error === 'Email has already been taken') {
+                setError('Este email já está cadastrado.');
+            } else {
+                setError(error || 'Ocorreu um erro. Tente novamente.');
+            }
+            return;
         }
 
         const { token } = await res.json()
@@ -33,32 +50,58 @@ export default function SignupPage() {
     }
 
     return (
-        <div>
-            <h1>Criação de Conta</h1>
-            <form onSubmit={handleSignup}>
-                <div>
-                    <label htmlFor="email">Email:</label>
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 via-blue-300 to-blue-500">
+            <h1 className="text-4xl font-black text-white mb-6">Crie sua conta</h1>
+            <form
+                onSubmit={handleSignup}
+                className="bg-white p-6 rounded-lg shadow-lg w-80"
+            >
+                <div className="mb-4">
+                    <label
+                        htmlFor="email"
+                        className="block text-gray-700 font-medium mb-2"
+                    >
+                        Email:
+                    </label>
                     <input
                         id="email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        className="w-full p-2 border border-gray-300 rounded text-gray-700"
                     />
                 </div>
-                <div>
-                    <label htmlFor="password">Senha:</label>
+                <div className="mb-4">
+                    <label
+                        htmlFor="password"
+                        className="block text-gray-700 font-medium mb-2"
+                    >
+                        Senha:
+                    </label>
                     <input
                         id="password"
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        className="w-full p-2 border border-gray-300 rounded text-gray-700"
                     />
                 </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <button type="submit">Criar Conta</button>
+                {error && <p className="text-red-500 mb-4">{error}</p>}
+                <button
+                    type="submit"
+                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                >
+                    Criar Conta
+                </button>
             </form>
+            <p className="mt-4 text-gray-700 text-center">
+                Já tem uma conta?{' '}
+                <a href="/login" className="text-blue-800 hover:underline">
+                    Faça login
+                </a>
+            </p>
         </div>
     )
 }
