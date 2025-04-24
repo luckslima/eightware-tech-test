@@ -1,11 +1,12 @@
-class Users::RegistrationsController < ApplicationController
+class Users::RegistrationsController < Devise::RegistrationsController
 
     def create
       Rails.logger.info("Sign up params: #{sign_up_params.inspect}")
       user = User.new(sign_up_params)
     
       if user.save
-        render json: { token: request.env['warden-jwt_auth.token'], user: user }, status: :created
+        token = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil).first
+        render json: { token: token }, status: :created
       else
         Rails.logger.error("User creation failed: #{user.errors.full_messages}")
         render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
