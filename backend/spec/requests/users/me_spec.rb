@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe 'User Profile', type: :request do
-  let!(:user) { User.create!(email: 'test@example.com', password: 'password') }
+  let!(:user) { User.create!(name:'Lucas', email: 'test@example.com', password: 'password') }
 
   it 'returns the user when authenticated' do
-    post '/users/login', params: { user: { email: user.email, password: 'password' } }
+    post '/users/login', params: { email: user.email, password: 'password' }
     expect(response).to have_http_status(:ok) # Verifica se o login foi bem-sucedido
 
     token = JSON.parse(response.body)['token']

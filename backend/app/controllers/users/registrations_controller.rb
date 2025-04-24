@@ -15,6 +15,6 @@ class Users::RegistrationsController < ApplicationController
     private
 
     def sign_up_params
-    params.permit(:email, :password, :password_confirmation)
+      params.permit(:email, :password, :password_confirmation, :name, :bio, :photo)
     end
 end
