@@ -23,6 +23,7 @@ describe('SignupPage', () => {
     it('shows an error message when the password is too short', async () => {
         render(<SignupPage />);
 
+        fireEvent.change(screen.getByLabelText('Nome:'), { target: { value: 'Lucas' } });
         fireEvent.change(screen.getByLabelText('Email:'), { target: { value: 'test@example.com' } });
         fireEvent.change(screen.getByLabelText('Senha:'), { target: { value: '123' } });
         fireEvent.click(screen.getByRole('button', { name: /Criar Conta/i }));
@@ -41,6 +42,7 @@ describe('SignupPage', () => {
 
         render(<SignupPage />);
 
+        fireEvent.change(screen.getByLabelText('Nome:'), { target: { value: 'Lucas' } });
         fireEvent.change(screen.getByLabelText('Email:'), { target: { value: 'test@example.com' } });
         fireEvent.change(screen.getByLabelText('Senha:'), { target: { value: 'password123' } });
         fireEvent.click(screen.getByRole('button', { name: /Criar Conta/i }));
@@ -59,6 +61,7 @@ describe('SignupPage', () => {
 
         render(<SignupPage />);
 
+        fireEvent.change(screen.getByLabelText('Nome:'), { target: { value: 'Lucas' } });
         fireEvent.change(screen.getByLabelText('Email:'), { target: { value: 'test@example.com' } });
         fireEvent.change(screen.getByLabelText('Senha:'), { target: { value: 'password123' } });
         fireEvent.click(screen.getByRole('button', { name: /Criar Conta/i }));

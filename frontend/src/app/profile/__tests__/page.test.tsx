@@ -15,15 +15,22 @@ describe('ProfilePage', () => {
         global.fetch = jest.fn(() =>
             Promise.resolve({
                 ok: true,
-                json: () => Promise.resolve({ email: 'test@example.com' }),
+                json: () =>
+                    Promise.resolve({
+                        user: {
+                            name: 'Lucas',
+                            email: 'test@email.com',
+                            bio: 'My bio',
+                            photo_url: null
+                        }
+                    })
             })
         ) as jest.Mock;
 
         render(<ProfilePage />);
 
-        // Aguarda até que o texto "Email: test@example.com" seja exibido
-        const mensagem = await screen.findByText('Bem-vindo!', {}, { timeout: 3000 });
-        expect(mensagem).toBeInTheDocument();
+        expect(await screen.findByText('Bem-vindo(a)!')).toBeInTheDocument();
+        expect(await screen.findByText('Carregando informações...')).toBeInTheDocument();
     });
 
     it('redirects to login page if not authenticated', async () => {

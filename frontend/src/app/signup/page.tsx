@@ -7,13 +7,16 @@ export default function SignupPage() {
     const router = useRouter()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [name, setName] = useState('');
+    const [bio, setBio] = useState('');
+    const [photo, setPhoto] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null)
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault()
         setError(null)
 
-        if (!email || !password) {
+        if (!email || !password || !name) {
             setError('Por favor, preencha todos os campos.');
             return;
         }
@@ -23,16 +26,30 @@ export default function SignupPage() {
             return;
         }
 
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('name', name);
+        formData.append('bio', bio);
+        if (photo) {
+            formData.append('photo', photo);
+        }
+
         const res = await fetch('/api/auth/signup', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        })
+            body: formData,
+        });
 
         if (!res.ok) {
-            const response = await res.json();
+            let response;
+            try {
+                response = await res.json();
+            } catch {
+                console.log('Erro da API:', response);
+                setError('Ocorreu um erro inesperado. Tente novamente.');
+                return;
+            }
+
 
             const error = response.errors?.[0];
 
@@ -55,7 +72,24 @@ export default function SignupPage() {
             <form
                 onSubmit={handleSignup}
                 className="bg-white p-6 rounded-lg shadow-lg w-80"
+                encType="multipart/form-data"
             >
+                <div className="mb-4">
+                    <label
+                        htmlFor="name"
+                        className="block text-gray-700 font-medium mb-2"
+                    >
+                        Nome:
+                    </label>
+                    <input
+                        id="name"
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded text-gray-700"
+                    />
+                </div>
                 <div className="mb-4">
                     <label
                         htmlFor="email"
@@ -85,6 +119,36 @@ export default function SignupPage() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        className="w-full p-2 border border-gray-300 rounded text-gray-700"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label
+                        htmlFor="bio"
+                        className="block text-gray-700 font-medium mb-2"
+                    >
+                        Bio:
+                    </label>
+                    <textarea
+                        id="bio"
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded text-gray-700"
+                        rows={3}
+                    />
+                </div>
+                <div className="mb-4">
+                    <label
+                        htmlFor="photo"
+                        className="block text-gray-700 font-medium mb-2"
+                    >
+                        Foto:
+                    </label>
+                    <input
+                        id="photo"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setPhoto(e.target.files?.[0] || null)}
                         className="w-full p-2 border border-gray-300 rounded text-gray-700"
                     />
                 </div>
